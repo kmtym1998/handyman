@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	_ "github.com/jackc/pgx/v4/stdlib"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 )
@@ -16,6 +16,7 @@ import (
 type TestUtil struct {
 	resource *dockertest.Resource
 	pool     *dockertest.Pool
+	option   TestDBOptions
 }
 
 type TestDBOptions struct {
@@ -69,16 +70,16 @@ func (tu *TestUtil) SetupPostgresContainer(t *testing.T, o TestDBOptions) error 
 	return nil
 }
 
-func (tu *TestUtil) ConnectDB(o TestDBOptions) (*sql.DB, error) {
+func (tu *TestUtil) ConnectDB() (*sql.DB, error) {
 	if tu.pool == nil || tu.resource == nil {
 		return nil, fmt.Errorf("container is not initialized")
 	}
 
 	databaseURI := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable",
-		o.User,
-		o.Password,
+		tu.option.User,
+		tu.option.Password,
 		tu.resource.GetHostPort("5432/tcp"),
-		o.DBName,
+		tu.option.DBName,
 	)
 
 	// NOTE: コンテナが立ち上がっても内部のアプリケーションが接続を受け付ける準備ができていない可能性がある
