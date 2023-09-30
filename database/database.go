@@ -1,4 +1,4 @@
-package handyman
+package database
 
 import (
 	"context"
