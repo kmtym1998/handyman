@@ -1,4 +1,4 @@
-package handyman
+package httputil
 
 import (
 	"bytes"
@@ -12,7 +12,7 @@ type RequestOptions struct {
 	Method  string
 	URL     string
 	Body    []byte
-	timeOut time.Duration
+	Timeout time.Duration
 	Header  map[string]string
 }
 
@@ -33,7 +33,7 @@ func SendRequest(ctx context.Context, opt RequestOptions) (*http.Response, error
 		req.Header.Set(k, v)
 	}
 
-	client := &http.Client{Timeout: opt.timeOut}
+	client := &http.Client{Timeout: opt.Timeout}
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to send request: %w", err)
