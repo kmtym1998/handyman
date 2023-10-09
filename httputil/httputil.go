@@ -3,9 +3,10 @@ package httputil
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/cockroachdb/errors"
 )
 
 type RequestOptions struct {
@@ -26,7 +27,7 @@ func SendRequest(ctx context.Context, opt RequestOptions) (*http.Response, error
 		bytes.NewBuffer(opt.Body),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create request: %w", err)
+		return nil, errors.Wrap(err, "failed to create request: %w")
 	}
 
 	for k, v := range opt.Header {
@@ -36,7 +37,7 @@ func SendRequest(ctx context.Context, opt RequestOptions) (*http.Response, error
 	client := &http.Client{Timeout: opt.Timeout}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("failed to send request: %w", err)
+		return nil, errors.Wrap(err, "failed to send request: %w")
 	}
 
 	return resp, nil
